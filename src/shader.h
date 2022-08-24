@@ -1,11 +1,12 @@
 #pragma once
 #include <GL/glew.h>
 #include <stdint.h>
-#include <bits/types/error_t.h>
+#include <stdio.h>
+#include <sys/stat.h>
 
-typedef struct {
-    const char* vertex;
-    const char* fragment;
-} shader_path_pairs;
+typedef struct stat shader_stat_pair[2];
+typedef FILE* shader_file_pair[2];
 
-error_t load_shader_programs(size_t num_shader_programs, const shader_path_pairs shader_path_pairs[], GLuint shader_programs[]);
+void load_shader_programs(size_t num_shader_programs, const shader_stat_pair stats[], const shader_file_pair files[], GLuint shader_programs[]);
+
+typedef const char* shader_path_pair[2];
