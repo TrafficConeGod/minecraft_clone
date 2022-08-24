@@ -79,7 +79,7 @@ int main() {
 
     mat4s proj = glms_perspective(M_TAU / 4, 1280.0f/720.0f, 0.01f, 300.0f);
 
-    mat4s view = glms_lookat(VEC3(0.0f, 0.0f, -5.0f), VEC3(0.0f, 0.0f, 0.0f), VEC3(0.0f, 1.0f, 0.0f));
+    mat4s view = glms_lookat(VEC3(0.0f, 3.0f, -5.0f), VEC3(0.0f, 0.0f, 0.0f), VEC3(0.0f, 1.0f, 0.0f));
 
     mat4s view_proj = glms_mat4_mul(proj, view);
 
