@@ -1,9 +1,20 @@
 #include "shader.h"
+#include "util.h"
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
+#include <cglm/vec2.h>
+
+static vec2 vertex_positions[] = {
+    { 0.0f, 0.0f },
+    { 1.0f, 0.0f },
+    { 0.0f, 1.0f },
+    { 1.0f, 1.0f },
+    { 1.0f, 0.0f },
+    { 0.0f, 1.0f }
+};
 
 int main() {
     if (!glfwInit()) {
@@ -35,7 +46,7 @@ int main() {
     glGenVertexArrays(1, &vert_array);
     glBindVertexArray(vert_array);
 
-    #define NUM_SHADER_PROGRAMS sizeof(shader_path_pairs)/sizeof(shader_path_pairs[0])
+    #define NUM_SHADER_PROGRAMS SIZEOF_ARRAY(shader_path_pairs)
 
     shader_path_pairs shader_path_pairs[] = {
         { "shader/vertex.glsl", "shader/fragment.glsl" }
@@ -48,6 +59,32 @@ int main() {
     }
 
     #undef NUM_SHADER_PROGRAMS
+
+    GLuint vertex_buf;
+    glGenBuffers(1, &vertex_buf);
+
+    glUseProgram(shader_programs[0]);
+
+    for (;;) {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, shader_programs[0]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_positions), vertex_positions, GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+        
+        glDrawArrays(GL_TRIANGLES, 0, SIZEOF_ARRAY(vertex_positions));
+
+        glDisableVertexAttribArray(0);
+
+        glfwSwapBuffers(win);
+
+        glfwPollEvents();
+
+        if (glfwWindowShouldClose(win)) {
+            break;
+        }
+    }
 
     return 0;
 }
