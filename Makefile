@@ -5,7 +5,7 @@ LIBS := -lGL -lglut -lGLEW -lglfw -lX11 -lXi -lXrandr -lm
 OBJECTS := $(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SOURCES)))
 DEPENDS := $(patsubst %.c,%.d,$(patsubst %.cpp,%.d,$(SOURCES)))
 
-CFLAGS = -O3 -Wall
+CFLAGS = -O3 -Wall -std=c2x
 CXXFLAGS = $(CFLAGS) -fno-exceptions -std=c++2a
 
 .PHONY: build run clean

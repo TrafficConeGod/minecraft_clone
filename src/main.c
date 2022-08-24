@@ -5,16 +5,18 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
-#include <cglm/vec2.h>
+#include <math.h>
+#include <cglm/cglm.h>
+#include <cglm/struct.h>
 
-static vec2 vertex_positions[] = {
-    { -1, -1 },
-    { 1, -1 },
-    { -1, 1 },
+static vec3 vertex_positions[] = {
+    { -1, -1, 0 },
+    { 1, -1, 0 },
+    { -1, 1, 0 },
     //
-    { 1, 1 },
-    { 1, -1 },
-    { -1, 1 }
+    { 1, 1, 0 },
+    { 1, -1, 0 },
+    { -1, 1, 0 }
 };
 
 static vec2 vertex_uvs[] = {
@@ -53,6 +55,8 @@ int main() {
 
     glfwSetInputMode(win, GLFW_STICKY_KEYS, GL_TRUE);
 
+    glDisable(GL_CULL_FACE);
+
     GLuint vert_array;
     glGenVertexArrays(1, &vert_array);
     glBindVertexArray(vert_array);
@@ -73,6 +77,20 @@ int main() {
 
     glUseProgram(shader_programs[0]);
 
+    mat4s proj = glms_perspective(M_TAU / 4, 1280.0f/720.0f, 0.01f, 300.0f);
+
+    mat4s view = glms_lookat(VEC3(0.0f, 0.0f, -5.0f), VEC3(0.0f, 0.0f, 0.0f), VEC3(0.0f, 1.0f, 0.0f));
+
+    mat4s view_proj = glms_mat4_mul(proj, view);
+
+    mat4s model = glms_mat4_identity();
+    model = glms_translate(model, VEC3(0.0f, 0.0f, 0.0f));
+
+    mat4s model_view_proj = glms_mat4_mul(view_proj, model);
+
+    GLuint mvp_uniform = glGetUniformLocation(shader_programs[0], "mvp");
+    glUniformMatrix4fv(mvp_uniform, 1, GL_FALSE, (GLfloat*)&model_view_proj);
+
     GLuint pos_buf;
     glGenBuffers(1, &pos_buf);
     glBindBuffer(GL_ARRAY_BUFFER, pos_buf);
@@ -88,7 +106,7 @@ int main() {
 
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, pos_buf);
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
         glEnableVertexAttribArray(1);
         glBindBuffer(GL_ARRAY_BUFFER, uv_buf);
