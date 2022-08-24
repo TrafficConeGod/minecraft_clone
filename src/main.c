@@ -17,6 +17,16 @@ static vec2 vertex_positions[] = {
     { -1, 1 }
 };
 
+static vec2 vertex_uvs[] = {
+    { 0, 0 },
+    { 1, 0 },
+    { 0, 1 },
+    //
+    { 1, 1 },
+    { 1, 0 },
+    { 0, 1 }
+};
+
 int main() {
     if (!glfwInit()) {
         puts("Failed to initialize GLFW");
@@ -61,22 +71,33 @@ int main() {
 
     #undef NUM_SHADER_PROGRAMS
 
-    GLuint vertex_buf;
-    glGenBuffers(1, &vertex_buf);
-
     glUseProgram(shader_programs[0]);
+
+    GLuint pos_buf;
+    glGenBuffers(1, &pos_buf);
+    glBindBuffer(GL_ARRAY_BUFFER, pos_buf);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_positions), vertex_positions, GL_STATIC_DRAW);
+
+    GLuint uv_buf;
+    glGenBuffers(1, &uv_buf);
+    glBindBuffer(GL_ARRAY_BUFFER, uv_buf);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_uvs), vertex_uvs, GL_STATIC_DRAW);
 
     for (;;) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, vertex_buf);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_positions), vertex_positions, GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, pos_buf);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+
+        glEnableVertexAttribArray(1);
+        glBindBuffer(GL_ARRAY_BUFFER, uv_buf);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, NULL);
 
         glDrawArrays(GL_TRIANGLES, 0, SIZEOF_ARRAY(vertex_positions) * 2);
 
         glDisableVertexAttribArray(0);
+        glDisableVertexAttribArray(1);
 
         glfwSwapBuffers(win);
 
