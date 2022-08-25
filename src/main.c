@@ -88,8 +88,6 @@ int main() {
             exit(-1);
         }
 
-        glDisable(GL_CULL_FACE);
-
         GLuint vert_array;
         glGenVertexArrays(1, &vert_array);
         glBindVertexArray(vert_array);
