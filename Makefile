@@ -1,7 +1,7 @@
 TARGET := app
 
 SOURCES := $(wildcard src/*.c) $(wildcard src/*.cpp)
-LIBS := -lGL -lglut -lGLEW -lglfw -lX11 -lXi -lXrandr -lm
+LIBS := -lGL -lglut -lGLEW -lglfw -lX11 -lXi -lXrandr -lm -lpng
 OBJECTS := $(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SOURCES)))
 DEPENDS := $(patsubst %.c,%.d,$(patsubst %.cpp,%.d,$(SOURCES)))
 

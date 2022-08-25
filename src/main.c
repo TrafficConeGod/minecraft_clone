@@ -1,4 +1,6 @@
 #include "shader.h"
+#include "texture.h"
+#include "fs.h"
 #include "util.h"
 #include <GLFW/glfw3.h>
 #include <stdio.h>
@@ -9,7 +11,7 @@
 #include <cglm/cglm.h>
 #include <cglm/struct.h>
 
-static vec3 vertex_positions[] = {
+static const vec3 vertex_positions[] = {
     { -1, -1, 0 },
     { 1, -1, 0 },
     { -1, 1, 0 },
@@ -19,7 +21,7 @@ static vec3 vertex_positions[] = {
     { -1, 1, 0 }
 };
 
-static vec2 vertex_uvs[] = {
+static const vec2 vertex_uvs[] = {
     { 0, 0 },
     { 1, 0 },
     { 0, 1 },
@@ -29,7 +31,24 @@ static vec2 vertex_uvs[] = {
     { 0, 1 }
 };
 
+static const char* file_paths[] = {
+    "shader/vertex.glsl", "shader/fragment.glsl",
+    "textures/chunk.png"
+};
+
+#define SHADER_PROGRAMS_BEGIN 0
+#define NUM_SHADER_PROGRAMS 1
+
+#define TEXTURES_BEGIN (NUM_SHADER_PROGRAMS * 2)
+#define NUM_TEXTURES 0
+
+static const char* file_modes[] = {
+    "r", "r",
+    "rb"
+};
+
 int main() {
+    // Init GLFW
     if (!glfwInit()) {
         puts("Failed to initialize GLFW");
         exit(-1);
@@ -55,31 +74,41 @@ int main() {
 
     glfwSetInputMode(win, GLFW_STICKY_KEYS, GL_TRUE);
 
-    glDisable(GL_CULL_FACE);
-
-    GLuint vert_array;
-    glGenVertexArrays(1, &vert_array);
-    glBindVertexArray(vert_array);
-
-    #define NUM_SHADER_PROGRAMS SIZEOF_ARRAY(shader_path_pairs)
-
-    shader_path_pairs shader_path_pairs[] = {
-        { "shader/vertex.glsl", "shader/fragment.glsl" }
-    };
     GLuint shader_programs[NUM_SHADER_PROGRAMS];
-    error_t code = load_shader_programs(NUM_SHADER_PROGRAMS, shader_path_pairs, shader_programs);
-    if (code != 0) {
-        printf("Error: %s\n", strerror(code));
-        exit(-1);
-    }
+    GLuint textures[NUM_TEXTURES];
+    {
+        #define NUM_FILES SIZEOF_ARRAY(file_paths)
+        struct stat stats[NUM_FILES];
+        FILE* files[NUM_FILES];
 
-    #undef NUM_SHADER_PROGRAMS
+        // Open all files
+        error_t code = open_files(NUM_FILES, file_paths, file_modes, stats, files);
+        if (code != 0) {
+            printf("Error: %s\n", strerror(code));
+            exit(-1);
+        }
+
+        glDisable(GL_CULL_FACE);
+
+        GLuint vert_array;
+        glGenVertexArrays(1, &vert_array);
+        glBindVertexArray(vert_array);
+
+        // Load shaders
+        load_shader_programs(NUM_SHADER_PROGRAMS, (const shader_stat_pair*)&stats[0], (const shader_file_pair*)&files[0], shader_programs);
+
+        load_png_textures(NUM_TEXTURES, &files[TEXTURES_BEGIN], textures);
+
+        // Close all files
+        close_files(NUM_FILES, files);
+        #undef NUM_FILES
+    }
 
     glUseProgram(shader_programs[0]);
 
     mat4s proj = glms_perspective(M_TAU / 4, 1280.0f/720.0f, 0.01f, 300.0f);
 
-    mat4s view = glms_lookat(VEC3(0.0f, 3.0f, -5.0f), VEC3(0.0f, 0.0f, 0.0f), VEC3(0.0f, 1.0f, 0.0f));
+    mat4s view = glms_lookat(VEC3(2.0f, 5.0f, -5.0f), VEC3(0.0f, 0.0f, 0.0f), VEC3(0.0f, 1.0f, 0.0f));
 
     mat4s view_proj = glms_mat4_mul(proj, view);
 
@@ -100,7 +129,7 @@ int main() {
     glGenBuffers(1, &uv_buf);
     glBindBuffer(GL_ARRAY_BUFFER, uv_buf);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_uvs), vertex_uvs, GL_STATIC_DRAW);
-
+    
     for (;;) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

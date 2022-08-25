@@ -1,8 +1,7 @@
 #pragma once
+#include "fs.h"
 #include <GL/glew.h>
 #include <stdint.h>
-#include <stdio.h>
-#include <sys/stat.h>
 
 typedef struct stat shader_stat_pair[2];
 typedef FILE* shader_file_pair[2];
