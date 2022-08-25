@@ -1,9 +1,8 @@
 #include "texture.h"
-#include "int_types.h"
 #include <stdlib.h>
 #include <png.h>
 
-error_t load_png_textures(size_t num_textures, FILE* const files[], GLuint textures[]) {
+error_t load_png_files(size_t num_textures, FILE* const files[], image images[]) {
     for (size_t i = 0; i < num_textures; i++) {
         png_struct* png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
         if (!png) { return -1; }
@@ -17,10 +16,10 @@ error_t load_png_textures(size_t num_textures, FILE* const files[], GLuint textu
 
         png_read_info(png, info);
 
-        u32 width = png_get_image_width(png, info);
-        u32 height = png_get_image_height(png, info);
-        u32 color_type = png_get_color_type(png, info);
-        u32 bit_depth = png_get_bit_depth(png, info);
+        size_t width = png_get_image_width(png, info);
+        size_t height = png_get_image_height(png, info);
+        size_t color_type = png_get_color_type(png, info);
+        size_t bit_depth = png_get_bit_depth(png, info);
 
         if (bit_depth == 16) {
             png_set_strip_16(png);
@@ -55,13 +54,41 @@ error_t load_png_textures(size_t num_textures, FILE* const files[], GLuint textu
 
         png_read_update_info(png, info);
 
-        
-        for (size_t i = 0; i < height; i++) {
-
+        size_t num_row_bytes = png_get_rowbytes(png, info);
+        png_byte* image_data = malloc(num_row_bytes * height * sizeof(png_byte*));
+        png_byte* row_pointers[height];
+        for (size_t y = 0; y < width; y++) {
+            row_pointers[y] = image_data + (y * num_row_bytes);
         }
 
+        png_read_image(png, row_pointers);
+
         png_destroy_read_struct(&png, &info, NULL);
+
+        image img = {
+            .width = width,
+            .height = height,
+            .data = image_data
+        };
+        images[i] = img;
     }
 
     return 0;
+}
+
+void load_textures(size_t num_textures, const image images[], GLuint textures[]) {
+    glGenTextures(num_textures, textures);
+    for (size_t i = 0; i < num_textures; i++) {
+        glBindTexture(GL_TEXTURE_2D, textures[i]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, images[i].width, images[i].height, 0, GL_BGRA, GL_UNSIGNED_BYTE, images[i].data);
+
+        free(images[i].data);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
 }

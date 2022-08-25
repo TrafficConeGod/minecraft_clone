@@ -40,7 +40,7 @@ static const char* file_paths[] = {
 #define NUM_SHADER_PROGRAMS 1
 
 #define TEXTURES_BEGIN (NUM_SHADER_PROGRAMS * 2)
-#define NUM_TEXTURES 0
+#define NUM_TEXTURES 1
 
 static const char* file_modes[] = {
     "r", "r",
@@ -97,7 +97,14 @@ int main() {
         // Load shaders
         load_shader_programs(NUM_SHADER_PROGRAMS, (const shader_stat_pair*)&stats[0], (const shader_file_pair*)&files[0], shader_programs);
 
-        load_png_textures(NUM_TEXTURES, &files[TEXTURES_BEGIN], textures);
+        image images[NUM_TEXTURES];
+        code = load_png_files(NUM_TEXTURES, &files[TEXTURES_BEGIN], images);
+        if (code != 0) {
+            printf("Error loading png file\n");
+            exit(-1);
+        }
+
+        load_textures(NUM_TEXTURES, images, textures);
 
         // Close all files
         close_files(NUM_FILES, files);
