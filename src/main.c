@@ -127,6 +127,11 @@ int main() {
     GLuint mvp_uniform = glGetUniformLocation(shader_programs[0], "mvp");
     glUniformMatrix4fv(mvp_uniform, 1, GL_FALSE, (GLfloat*)&model_view_proj);
 
+    GLuint tex_sampler_uniform = glGetUniformLocation(shader_programs[0], "tex_sampelr");
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textures[0]);
+    glUniform1i(tex_sampler_uniform, 0);
+
     GLuint pos_buf;
     glGenBuffers(1, &pos_buf);
     glBindBuffer(GL_ARRAY_BUFFER, pos_buf);

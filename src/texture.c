@@ -80,7 +80,7 @@ void load_textures(size_t num_textures, const image images[], GLuint textures[])
     glGenTextures(num_textures, textures);
     for (size_t i = 0; i < num_textures; i++) {
         glBindTexture(GL_TEXTURE_2D, textures[i]);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, images[i].width, images[i].height, 0, GL_BGRA, GL_UNSIGNED_BYTE, images[i].data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, images[i].width, images[i].height, 0, GL_RGBA, GL_UNSIGNED_BYTE, images[i].data);
 
         free(images[i].data);
 
