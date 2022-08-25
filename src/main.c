@@ -23,12 +23,12 @@ static const vec3 vertex_positions[] = {
 
 static const vec2 vertex_uvs[] = {
     { 0, 0 },
-    { 1, 0 },
-    { 0, 1 },
+    { 256, 0 },
+    { 0, 256 },
     //
-    { 1, 1 },
-    { 1, 0 },
-    { 0, 1 }
+    { 256, 256 },
+    { 256, 0 },
+    { 0, 256 }
 };
 
 static const char* file_paths[] = {
@@ -125,7 +125,7 @@ int main() {
     GLuint mvp_uniform = glGetUniformLocation(shader_programs[0], "mvp");
     glUniformMatrix4fv(mvp_uniform, 1, GL_FALSE, (GLfloat*)&model_view_proj);
 
-    GLuint tex_sampler_uniform = glGetUniformLocation(shader_programs[0], "tex_sampelr");
+    GLuint tex_sampler_uniform = glGetUniformLocation(shader_programs[0], "tex_sampler");
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textures[0]);
     glUniform1i(tex_sampler_uniform, 0);
