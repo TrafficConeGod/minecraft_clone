@@ -47,6 +47,24 @@ static const vec2 vertex_uvs[] = {
     { 48, 16 }
 };
 
+static const vec4 vertex_uv_bounds[] = {
+    { 48, 63, 0, 15 },
+    { 48, 63, 0, 15 },
+    { 48, 63, 0, 15 },
+    //
+    { 48, 63, 0, 15 },
+    { 48, 63, 0, 15 },
+    { 48, 63, 0, 15 },
+    ///
+    { 48, 63, 0, 15 },
+    { 48, 63, 0, 15 },
+    { 48, 63, 0, 15 },
+    //
+    { 48, 63, 0, 15 },
+    { 48, 63, 0, 15 },
+    { 48, 63, 0, 15 },
+};
+
 static const char* file_paths[] = {
     "shader/vertex.glsl", "shader/fragment.glsl",
     "textures/chunk.png"
@@ -155,7 +173,12 @@ int main() {
     glGenBuffers(1, &uv_buf);
     glBindBuffer(GL_ARRAY_BUFFER, uv_buf);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_uvs), vertex_uvs, GL_STATIC_DRAW);
-    
+
+    GLuint uv_bounds_buf;
+    glGenBuffers(1, &uv_bounds_buf);
+    glBindBuffer(GL_ARRAY_BUFFER, uv_bounds_buf);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_uv_bounds), vertex_uv_bounds, GL_STATIC_DRAW);
+
     for (;;) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -167,10 +190,15 @@ int main() {
         glBindBuffer(GL_ARRAY_BUFFER, uv_buf);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, NULL);
 
+        glEnableVertexAttribArray(2);
+        glBindBuffer(GL_ARRAY_BUFFER, uv_bounds_buf);
+        glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 0, NULL);
+
         glDrawArrays(GL_TRIANGLES, 0, SIZEOF_ARRAY(vertex_positions) * 2);
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
+        glDisableVertexAttribArray(2);
 
         glfwSwapBuffers(win);
 
