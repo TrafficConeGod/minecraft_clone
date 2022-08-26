@@ -6,7 +6,7 @@ WARNS := -Wall -Wextra -Wdouble-promotion -Wduplicate-decl-specifier -Wformat=2 
 OBJECTS := $(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SOURCES)))
 DEPENDS := $(patsubst %.c,%.d,$(patsubst %.cpp,%.d,$(SOURCES)))
 
-CFLAGS = -O3 $(WARNS) -Werror -std=c2x -g
+CFLAGS = -O3 -Werror -std=c2x -g
 CXXFLAGS = $(CFLAGS) -fno-exceptions -std=c++2a
 
 .PHONY: build run clean
@@ -23,7 +23,7 @@ clean:
 -include $(DEPENDS)
 
 %.o: %.c Makefile
-	$(CC) $(CFLAGS) -MMD -MP -c $< -o $@
+	$(CC) $(CFLAGS) $(WARNS) -MMD -MP -c $< -o $@
 
 %.o: %.cpp Makefile
-	$(CXX) $(CXXFLAGS) -MMD -MP -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(WARNS) -MMD -MP -c $< -o $@
