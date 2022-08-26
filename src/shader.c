@@ -1,12 +1,14 @@
 #include "shader.h"
 
-void load_shader_programs(size_t num_shader_programs, const shader_stat_pair stats[], const shader_file_pair files[], GLuint shader_programs[]) {
+error_t load_shader_programs(size_t num_shader_programs, const shader_stat_pair stats[], const shader_file_pair files[], GLuint shader_programs[]) {
     for (size_t i = 0; i < num_shader_programs; i++) {
         size_t vertex_source_size = stats[i][0].st_size;
         char vertex_source[vertex_source_size + 1];
         vertex_source[vertex_source_size] = '\0';
 
-        fread(vertex_source, vertex_source_size, 1, files[i][0]);
+        if (fread(vertex_source, vertex_source_size, 1, files[i][0]) != 1) {
+            return -1;
+        }
         GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
         const char* vertex_source_ptr = vertex_source;
         glShaderSource(vertex_shader, 1, &vertex_source_ptr, NULL);
@@ -26,7 +28,9 @@ void load_shader_programs(size_t num_shader_programs, const shader_stat_pair sta
         char fragment_source[fragment_source_size + 1];
         fragment_source[fragment_source_size] = '\0';
 
-        fread(fragment_source, fragment_source_size, 1, files[i][1]);
+        if (fread(fragment_source, fragment_source_size, 1, files[i][1]) != 1) {
+            return -1;
+        }
         GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
         const char* fragment_source_ptr = fragment_source;
         glShaderSource(fragment_shader, 1, &fragment_source_ptr, NULL);
@@ -61,4 +65,5 @@ void load_shader_programs(size_t num_shader_programs, const shader_stat_pair sta
 
         shader_programs[i] = shader_program;
     }
+    return 0;
 }

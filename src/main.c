@@ -130,7 +130,11 @@ int main() {
         glBindVertexArray(vert_array);
 
         // Load shaders
-        load_shader_programs(NUM_SHADER_PROGRAMS, (const shader_stat_pair*)&stats[0], (const shader_file_pair*)&files[0], shader_programs);
+        code = load_shader_programs(NUM_SHADER_PROGRAMS, (const shader_stat_pair*)&stats[0], (const shader_file_pair*)&files[0], shader_programs);
+        if (code != 0) {
+            printf("Error loading shader program\n");
+            goto error;
+        }
 
         image images[NUM_TEXTURES];
         code = load_png_images_onto_data_stack(NUM_TEXTURES, &files[TEXTURES_BEGIN], images);
