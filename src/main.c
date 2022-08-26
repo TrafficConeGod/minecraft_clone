@@ -163,35 +163,40 @@ int main() {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textures[0]);
     glUniform1i(tex_sampler_uniform, 0);
+    
+    union {
+        GLuint data[3];
+        struct __attribute__((__packed__)) {
+            GLuint pos;
+            GLuint uv;
+            GLuint uv_bounds;
+        };
+    } buffers;
+    
+    glGenBuffers(SIZEOF_ARRAY(buffers.data), buffers.data);
 
-    GLuint pos_buf;
-    glGenBuffers(1, &pos_buf);
-    glBindBuffer(GL_ARRAY_BUFFER, pos_buf);
+    glBindBuffer(GL_ARRAY_BUFFER, buffers.pos);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_positions), vertex_positions, GL_STATIC_DRAW);
 
-    GLuint uv_buf;
-    glGenBuffers(1, &uv_buf);
-    glBindBuffer(GL_ARRAY_BUFFER, uv_buf);
+    glBindBuffer(GL_ARRAY_BUFFER, buffers.uv);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_uvs), vertex_uvs, GL_STATIC_DRAW);
 
-    GLuint uv_bounds_buf;
-    glGenBuffers(1, &uv_bounds_buf);
-    glBindBuffer(GL_ARRAY_BUFFER, uv_bounds_buf);
+    glBindBuffer(GL_ARRAY_BUFFER, buffers.uv_bounds);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_uv_bounds), vertex_uv_bounds, GL_STATIC_DRAW);
 
     for (;;) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, pos_buf);
+        glBindBuffer(GL_ARRAY_BUFFER, buffers.pos);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
         glEnableVertexAttribArray(1);
-        glBindBuffer(GL_ARRAY_BUFFER, uv_buf);
+        glBindBuffer(GL_ARRAY_BUFFER, buffers.uv);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, NULL);
 
         glEnableVertexAttribArray(2);
-        glBindBuffer(GL_ARRAY_BUFFER, uv_bounds_buf);
+        glBindBuffer(GL_ARRAY_BUFFER, buffers.uv_bounds);
         glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 0, NULL);
 
         glDrawArrays(GL_TRIANGLES, 0, SIZEOF_ARRAY(vertex_positions) * 2);
