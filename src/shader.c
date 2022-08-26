@@ -67,3 +67,9 @@ error_t load_shader_programs(size_t num_shader_programs, const shader_stat_pair 
     }
     return 0;
 }
+
+void unload_shader_programs(size_t num_shader_programs, GLuint shader_programs[]) {
+    for (size_t i = 0; i < num_shader_programs; i++) {
+        glDeleteShader(shader_programs[i]);
+    }
+}

@@ -102,3 +102,7 @@ void free_images_from_data_stack(size_t num_images) {
         mem.data_stack += sizeof(size_t) + image_size;
     }
 }
+
+void unload_textures(size_t num_textures, GLuint textures[]) {
+    glDeleteTextures(num_textures, textures);
+}
