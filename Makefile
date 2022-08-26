@@ -2,10 +2,11 @@ TARGET := app
 
 SOURCES := $(wildcard src/*.c) $(wildcard src/*.cpp)
 LIBS := -lGL -lglut -lGLEW -lglfw -lX11 -lXi -lXrandr -lm -lpng
+WARNS := -Wall -Wextra -Wdouble-promotion -Wduplicate-decl-specifier -Wformat=2 -Wnull-dereference -Wimplicit-fallthrough
 OBJECTS := $(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SOURCES)))
 DEPENDS := $(patsubst %.c,%.d,$(patsubst %.cpp,%.d,$(SOURCES)))
 
-CFLAGS = -O3 -Wall -std=c2x -g
+CFLAGS = -O3 $(WARNS) -Werror -std=c2x -g
 CXXFLAGS = $(CFLAGS) -fno-exceptions -std=c++2a
 
 .PHONY: build run clean

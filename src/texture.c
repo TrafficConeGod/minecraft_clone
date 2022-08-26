@@ -11,8 +11,6 @@ error_t load_png_images_onto_data_stack(size_t num_images, FILE* const files[], 
         png_info* info = png_create_info_struct(png);
         if (!info) { return -1; }
 
-        if (setjmp(png_jmpbuf(png))) { return -1; }
-
         png_init_io(png, files[i]);
 
         png_read_info(png, info);
