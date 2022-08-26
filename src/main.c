@@ -1,4 +1,5 @@
 #include "shader.h"
+#include "mem.h"
 #include "texture.h"
 #include "fs.h"
 #include "util.h"
@@ -82,10 +83,12 @@ static const char* file_modes[] = {
 };
 
 int main() {
+    init_memory();
+
     // Init GLFW
     if (!glfwInit()) {
         puts("Failed to initialize GLFW");
-        exit(-1);
+        goto error;
     }
     glfwWindowHint(GLFW_SAMPLES, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -97,13 +100,13 @@ int main() {
     if (win == NULL) {
         glfwTerminate();
         puts("Failed to open GLFW window");
-        exit(-1);
+        goto error;
     }   
     glfwMakeContextCurrent(win);
     glewExperimental = true;
     if (glewInit() != GLEW_OK) {
         puts("Failed to initialize GLEW");
-        exit(-1);
+        goto error;
     }
 
     glfwSetInputMode(win, GLFW_STICKY_KEYS, GL_TRUE);
@@ -119,7 +122,7 @@ int main() {
         error_t code = open_files(NUM_FILES, file_paths, file_modes, stats, files);
         if (code != 0) {
             printf("Error: %s\n", strerror(code));
-            exit(-1);
+            goto error;
         }
 
         GLuint vert_array;
@@ -130,13 +133,15 @@ int main() {
         load_shader_programs(NUM_SHADER_PROGRAMS, (const shader_stat_pair*)&stats[0], (const shader_file_pair*)&files[0], shader_programs);
 
         image images[NUM_TEXTURES];
-        code = load_png_files(NUM_TEXTURES, &files[TEXTURES_BEGIN], images);
+        code = load_png_images_onto_data_stack(NUM_TEXTURES, &files[TEXTURES_BEGIN], images);
         if (code != 0) {
             printf("Error loading png file\n");
-            exit(-1);
+            goto error;
         }
 
         load_textures(NUM_TEXTURES, images, textures);
+
+        free_images_from_data_stack(NUM_TEXTURES);
 
         // Close all files
         close_files(NUM_FILES, files);
@@ -210,9 +215,13 @@ int main() {
         glfwPollEvents();
 
         if (glfwWindowShouldClose(win)) {
-            break;
+            goto end;
         }
     }
+
+    error:
+    end:
+        term_memory();
 
     return 0;
 }

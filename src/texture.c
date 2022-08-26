@@ -1,9 +1,10 @@
 #include "texture.h"
+#include "mem.h"
 #include <stdlib.h>
 #include <png.h>
 
-error_t load_png_files(size_t num_textures, FILE* const files[], image images[]) {
-    for (size_t i = 0; i < num_textures; i++) {
+error_t load_png_images_onto_data_stack(size_t num_images, FILE* const files[], image images[]) {
+    for (size_t i = 0; i < num_images; i++) {
         png_struct* png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
         if (!png) { return -1; }
 
@@ -55,7 +56,11 @@ error_t load_png_files(size_t num_textures, FILE* const files[], image images[])
         png_read_update_info(png, info);
 
         size_t num_row_bytes = png_get_rowbytes(png, info);
-        png_byte* image_data = malloc(num_row_bytes * height * sizeof(png_byte*));
+        size_t image_size = num_row_bytes * height * sizeof(png_byte);
+        mem.data_stack -= image_size;
+        png_byte* image_data = mem.data_stack;
+        mem.data_stack -= sizeof(size_t);
+        *(size_t*)mem.data_stack = image_size;
         png_byte* row_pointers[height];
         for (size_t y = 0; y < width; y++) {
             row_pointers[y] = image_data + (y * num_row_bytes);
@@ -82,13 +87,18 @@ void load_textures(size_t num_textures, const image images[], GLuint textures[])
         glBindTexture(GL_TEXTURE_2D, textures[i]);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, images[i].width, images[i].height, 0, GL_RGBA, GL_UNSIGNED_BYTE, images[i].data);
 
-        free(images[i].data);
-
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
         glGenerateMipmap(GL_TEXTURE_2D);
+    }
+}
+
+void free_images_from_data_stack(size_t num_images) {
+    for (size_t i = 0; i < num_images; i++) {
+        size_t image_size = *(size_t*)mem.data_stack;
+        mem.data_stack += sizeof(size_t) + image_size;
     }
 }

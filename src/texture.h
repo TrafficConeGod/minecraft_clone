@@ -9,5 +9,6 @@ typedef struct {
     GLubyte* data;
 } image;
 
-error_t load_png_files(size_t num_textures, FILE* const files[], image images[]);
+error_t load_png_images_onto_data_stack(size_t num_images, FILE* const files[], image images[]);
 void load_textures(size_t num_textures, const image images[], GLuint textures[]);
+void free_images_from_data_stack(size_t num_images);
