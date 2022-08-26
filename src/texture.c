@@ -58,10 +58,6 @@ error_t load_png_images_onto_data_stack(size_t num_images, FILE* const files[], 
         size_t num_row_bytes = png_get_rowbytes(png, info);
         size_t image_size = num_row_bytes * height * sizeof(png_byte);
 
-        if ((sizeof(size_t) + image_size) >= MEM_SIZE) {
-            return -1;
-        }
-
         mem.data_stack -= sizeof(size_t) + image_size;
         png_byte* image_data = mem.data_stack + sizeof(size_t);
         *(size_t*)mem.data_stack = image_size;
