@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define MEM_SIZE 33554432 // 32 MiB
-
 memory mem;
 
 void* total_memory;
