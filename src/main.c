@@ -2,6 +2,7 @@
 #include "mem.h"
 #include "texture.h"
 #include "fs.h"
+#include "gfx.h"
 #include "util.h"
 #include <GLFW/glfw3.h>
 #include <stdio.h>
@@ -12,7 +13,7 @@
 #include <cglm/cglm.h>
 #include <cglm/struct.h>
 
-static const vec3 vertex_positions[] = {
+static const pos_attr vertex_positions[] = {
     { 0, 0, 0 },
     { 1, 0, 0 },
     { 0, 1, 0 },
@@ -30,7 +31,7 @@ static const vec3 vertex_positions[] = {
     { 1, 1, 0 },
 };
 
-static const vec2 vertex_uvs[] = {
+static const uv_attr vertex_uvs[] = {
     { 48, 0 },
     { 64, 0 },
     { 48, 16 },
@@ -48,7 +49,7 @@ static const vec2 vertex_uvs[] = {
     { 48, 16 }
 };
 
-static const vec4 vertex_uv_bounds[] = {
+static const uv_bounds_attr vertex_uv_bounds[] = {
     { 48, 63, 0, 15 },
     { 48, 63, 0, 15 },
     { 48, 63, 0, 15 },
@@ -175,7 +176,7 @@ int main() {
     
     union {
         GLuint data[3];
-        struct __attribute__((__packed__)) {
+        struct PACKED {
             GLuint pos;
             GLuint uv;
             GLuint uv_bounds;
@@ -198,15 +199,15 @@ int main() {
 
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, buffers.pos);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+        glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, 0, NULL);
 
         glEnableVertexAttribArray(1);
         glBindBuffer(GL_ARRAY_BUFFER, buffers.uv);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+        glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, 0, NULL);
 
         glEnableVertexAttribArray(2);
         glBindBuffer(GL_ARRAY_BUFFER, buffers.uv_bounds);
-        glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 0, NULL);
+        glVertexAttribIPointer(2, 1, GL_UNSIGNED_INT, 0, NULL);
 
         glDrawArrays(GL_TRIANGLES, 0, SIZEOF_ARRAY(vertex_positions));
 
