@@ -27,6 +27,7 @@ void main() {
         float(packed_pos_attr >> 0x10u),
         1
     );
-    in_uv = uv_elems[uv_index_attr].uv;
-    in_uv_bounds = uv_elems[uv_index_attr].uv_bounds;
+    uv_elem elem = uv_elems[uv_index_attr];
+    in_uv = elem.uv;
+    in_uv_bounds = elem.uv_bounds;
 }
