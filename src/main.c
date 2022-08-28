@@ -31,40 +31,12 @@ static const pos_attr vertex_positions[] = {
     { 1, 1, 0 },
 };
 
-static const uv_attr vertex_uvs[] = {
-    { 48, 0 },
-    { 64, 0 },
-    { 48, 16 },
+static const u32 vertex_uv_indices[] = {
+    0, 1, 2,
+    3, 4, 5,
     //
-    { 64, 16 },
-    { 64, 0 },
-    { 48, 16 },
-    ///
-    { 48, 0 },
-    { 64, 0 },
-    { 48, 16 },
-    //
-    { 64, 16 },
-    { 64, 0 },
-    { 48, 16 }
-};
-
-static const uv_bounds_attr vertex_uv_bounds[] = {
-    { 48, 63, 0, 15 },
-    { 48, 63, 0, 15 },
-    { 48, 63, 0, 15 },
-    //
-    { 48, 63, 0, 15 },
-    { 48, 63, 0, 15 },
-    { 48, 63, 0, 15 },
-    ///
-    { 48, 63, 0, 15 },
-    { 48, 63, 0, 15 },
-    { 48, 63, 0, 15 },
-    //
-    { 48, 63, 0, 15 },
-    { 48, 63, 0, 15 },
-    { 48, 63, 0, 15 },
+    0, 1, 2,
+    3, 4, 5
 };
 
 static const char* file_paths[] = {
@@ -175,11 +147,10 @@ int main() {
     glUniform1i(tex_sampler_uniform, 0);
     
     union {
-        GLuint data[3];
+        GLuint data[2];
         struct PACKED {
             GLuint pos;
-            GLuint uv;
-            GLuint uv_bounds;
+            GLuint uv_indices;
         };
     } buffers;
     
@@ -188,11 +159,8 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, buffers.pos);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_positions), vertex_positions, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ARRAY_BUFFER, buffers.uv);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_uvs), vertex_uvs, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ARRAY_BUFFER, buffers.uv_bounds);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_uv_bounds), vertex_uv_bounds, GL_STATIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, buffers.uv_indices);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(vertex_uv_indices), vertex_uv_indices, GL_STATIC_DRAW);
 
     for (;;) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -202,18 +170,13 @@ int main() {
         glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, 0, NULL);
 
         glEnableVertexAttribArray(1);
-        glBindBuffer(GL_ARRAY_BUFFER, buffers.uv);
+        glBindBuffer(GL_ARRAY_BUFFER, buffers.uv_indices);
         glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, 0, NULL);
-
-        glEnableVertexAttribArray(2);
-        glBindBuffer(GL_ARRAY_BUFFER, buffers.uv_bounds);
-        glVertexAttribIPointer(2, 1, GL_UNSIGNED_INT, 0, NULL);
 
         glDrawArrays(GL_TRIANGLES, 0, SIZEOF_ARRAY(vertex_positions));
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
-        glDisableVertexAttribArray(2);
 
         glfwSwapBuffers(win);
 
