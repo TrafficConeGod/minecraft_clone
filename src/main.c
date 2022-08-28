@@ -13,6 +13,24 @@
 #include <cglm/cglm.h>
 #include <cglm/struct.h>
 
+static const vec2 uvs[] = {
+    { 0, 0 },
+    { 16, 0 },
+    { 0, 16 },
+    { 16, 16 },
+    { 16, 0 },
+    { 0, 16 }
+};
+
+static const ivec4 uv_bounds[] = {
+    { 0, 15, 0, 15 },
+    { 0, 15, 0, 15 },
+    { 0, 15, 0, 15 },
+    { 0, 15, 0, 15 },
+    { 0, 15, 0, 15 },
+    { 0, 15, 0, 15 }
+};
+
 static const pos_attr vertex_positions[] = {
     { 0, 0, 0 },
     { 1, 0, 0 },
@@ -138,13 +156,13 @@ int main() {
 
     mat4s model_view_proj = glms_mat4_mul(view_proj, model);
 
-    GLuint mvp_uniform = glGetUniformLocation(shader_programs[0], "mvp");
-    glUniformMatrix4fv(mvp_uniform, 1, GL_FALSE, (GLfloat*)&model_view_proj);
+    glUniform2fv(glGetUniformLocation(shader_programs[0], "uvs"), SIZEOF_ARRAY(uvs), (const GLfloat*)uvs);
+    glUniform4iv(glGetUniformLocation(shader_programs[0], "uv_bounds"), SIZEOF_ARRAY(uv_bounds), (const GLint*)uv_bounds);
+    glUniformMatrix4fv(glGetUniformLocation(shader_programs[0], "mvp"), 1, GL_FALSE, (const GLfloat*)&model_view_proj);
 
-    GLuint tex_sampler_uniform = glGetUniformLocation(shader_programs[0], "tex_sampler");
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textures[0]);
-    glUniform1i(tex_sampler_uniform, 0);
+    glUniform1i(glGetUniformLocation(shader_programs[0], "tex_sampler"), 0);
     
     union {
         GLuint data[2];

@@ -1,18 +1,8 @@
 #version 420 core
 
+uniform vec2 uvs[6];
+uniform ivec4 uv_bounds[6];
 uniform mat4 mvp;
-
-struct uv_elem {
-    vec2 uv;
-    ivec4 uv_bounds;
-} uv_elems[6] = {
-    { { 0, 0 }, { 0, 15, 0, 15 } },
-    { { 16, 0 }, { 0, 15, 0, 15 } },
-    { { 0, 16 }, { 0, 15, 0, 15 } },
-    { { 16, 16 }, { 0, 15, 0, 15 } },
-    { { 16, 0 }, { 0, 15, 0, 15 } },
-    { { 0, 16 }, { 0, 15, 0, 15 } }
-};
 
 layout(location = 0) in uint packed_pos_attr;
 layout(location = 1) in uint uv_index_attr;
@@ -27,7 +17,6 @@ void main() {
         float(packed_pos_attr >> 0x10u),
         1
     );
-    uv_elem elem = uv_elems[uv_index_attr];
-    in_uv = elem.uv;
-    in_uv_bounds = elem.uv_bounds;
+    in_uv = uvs[uv_index_attr];
+    in_uv_bounds = uv_bounds[uv_index_attr];
 }
