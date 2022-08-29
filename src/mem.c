@@ -15,9 +15,9 @@ void term_memory() {
     free(total_memory);
 }
 
-void push_dynamic_values_onto_data_stack(size_t num_values, const size_t value_sizes[], void* begin_ptrs[]) {
+void push_dynamic_values_onto_data_stack(size_t num_values, const size_t value_byte_counts[], void* begin_ptrs[]) {
     for (size_t i = 0; i < num_values; i++) {
-        size_t size = value_sizes[i];
+        size_t size = value_byte_counts[i];
         mem.data_stack -= sizeof(size_t) + size;
         begin_ptrs[i] = mem.data_stack + sizeof(size_t);
     }
