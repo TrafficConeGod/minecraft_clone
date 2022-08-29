@@ -12,3 +12,4 @@ typedef struct {
 error_t load_png_images_onto_data_stack(size_t num_images, FILE* const files[], image images[]);
 void load_textures(size_t num_textures, const image images[], GLuint textures[]);
 void unload_textures(size_t num_textures, GLuint textures[]);
+void free_images_from_data_stack(size_t num_images);

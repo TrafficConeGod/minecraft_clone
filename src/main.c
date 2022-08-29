@@ -136,7 +136,7 @@ int main() {
 
         load_textures(NUM_TEXTURES, images, textures);
 
-        pop_dynamic_values_from_data_stack(NUM_TEXTURES);
+        free_images_from_data_stack(NUM_TEXTURES);
 
         // Close all files
         close_files(NUM_FILES, files);
