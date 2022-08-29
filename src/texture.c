@@ -55,11 +55,8 @@ error_t load_png_images_onto_data_stack(size_t num_images, FILE* const files[], 
 
         size_t num_row_bytes = png_get_rowbytes(png, info);
         size_t image_size = num_row_bytes * height * sizeof(png_byte);
-
-        mem.data_stack -= sizeof(size_t) + image_size;
-        png_byte* image_data = mem.data_stack + sizeof(size_t);
-        *(size_t*)mem.data_stack = image_size;
-
+        png_byte* image_data;
+        push_dynamic_values_onto_data_stack(1, &image_size, (void**)&image_data);
 
         png_byte* row_pointers[height];
         for (size_t y = 0; y < width; y++) {
@@ -93,13 +90,6 @@ void load_textures(size_t num_textures, const image images[], GLuint textures[])
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
         glGenerateMipmap(GL_TEXTURE_2D);
-    }
-}
-
-void free_images_from_data_stack(size_t num_images) {
-    for (size_t i = 0; i < num_images; i++) {
-        size_t image_size = *(size_t*)mem.data_stack;
-        mem.data_stack += sizeof(size_t) + image_size;
     }
 }
 
