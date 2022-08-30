@@ -165,12 +165,15 @@ int main() {
     glBindTexture(GL_TEXTURE_2D, textures[0]);
     glUniform1i(glGetUniformLocation(shader_programs[0], "tex_sampler"), 0);
 
-    block_type block_types[NUM_BLOCKS];
-    block_type* ptr = block_types;
+    mem.data_stack -= sizeof(block_type) * NUM_BLOCKS;
+
+    block_type* block_types = mem.data_stack;
     vec3 chunk_pos = { 0, 0, 0 };
-    populate_block_arrays(1, &chunk_pos, &ptr);
+    populate_block_arrays(1, &chunk_pos, &block_types);
     
     create_block_meshes_from_block_types(block_types);
+
+    mem.data_stack += sizeof(block_type) * NUM_BLOCKS;
     
     union {
         GLuint data[2];

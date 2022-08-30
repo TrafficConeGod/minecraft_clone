@@ -22,7 +22,7 @@ static size_t get_neighbor_begin_index(size_t face) {
 // TODO: Implement functions for seperate faces
 static bool is_face_visible(size_t index, size_t nb_index, const block_type types[]) {
     switch (types[index]) {
-        default: return false;
+        default: printf("Not grass\n"); return false;
         case grass_block: return types[nb_index] == air_block;
     }
 }
@@ -41,11 +41,12 @@ void create_block_meshes_from_block_types(const block_type types[]) {
         size_t nb_index = get_neighbor_begin_index(face);
         // Initialize nb_index such: 0 <= nb_index < NUM_BLOCKS
         if (nb_index >= NUM_BLOCKS) {
-            index = nb_index;
+            index -= nb_index;
             nb_index = 0;
         }
-        
-        while (nb_index < NUM_BLOCKS) { \
+
+        size_t end_index = NUM_BLOCKS - index;
+        while (nb_index < end_index) {
             face_visibilities[index] = is_face_visible(index, nb_index, types);
             index++;
             nb_index++;
@@ -60,8 +61,8 @@ void populate_block_arrays(size_t num_arrays, const vec3 chunk_positions[], bloc
         vec3s pos = { .x = chunk_positions[i][0], .y = chunk_positions[i][1], .z = chunk_positions[i][2] };
         block_type* types = type_arrays[i];
 
-        for (size_t j = 0; j < CHUNK_SIZE; j++) {
-            types[j] = (j * pos.y) < 1000 ? grass_block : air_block;
+        for (size_t j = 0; j < NUM_BLOCKS; j++) {
+            types[j] = grass_block;
         }
     }
 }
