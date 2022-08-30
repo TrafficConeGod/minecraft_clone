@@ -4,6 +4,7 @@
 #include "fs.h"
 #include "gfx.h"
 #include "util.h"
+#include "blocks.h"
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -33,20 +34,20 @@ static const ivec4 uv_bounds[] = {
 
 static const pos_attr vertex_positions[] = {
     { 0, 0, 0 },
-    { 1, 0, 0 },
-    { 0, 1, 0 },
+    { 16, 0, 0 },
+    { 0, 16, 0 },
     //
-    { 1, 1, 0 },
-    { 1, 0, 0 },
-    { 0, 1, 0 },
+    { 16, 16, 0 },
+    { 16, 0, 0 },
+    { 0, 16, 0 },
     ///
-    { 1, 0, 0 },
-    { 2, 0, 0 },
-    { 1, 1, 0 },
+    { 16, 0, 0 },
+    { 32, 0, 0 },
+    { 16, 16, 0 },
     //
-    { 2, 1, 0 },
-    { 2, 0, 0 },
-    { 1, 1, 0 },
+    { 32, 16, 0 },
+    { 32, 0, 0 },
+    { 16, 16, 0 },
 };
 
 static const u32 vertex_uv_indices[] = {
@@ -163,6 +164,13 @@ int main() {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textures[0]);
     glUniform1i(glGetUniformLocation(shader_programs[0], "tex_sampler"), 0);
+
+    block_type block_types[NUM_BLOCKS];
+    block_type* ptr = block_types;
+    vec3 chunk_pos = { 0, 0, 0 };
+    populate_block_arrays(1, &chunk_pos, &ptr);
+    
+    create_block_meshes_from_block_types(block_types);
     
     union {
         GLuint data[2];
