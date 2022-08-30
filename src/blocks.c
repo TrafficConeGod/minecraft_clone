@@ -22,7 +22,7 @@ static size_t get_neighbor_begin_index(size_t face) {
 // TODO: Implement functions for seperate faces
 static bool is_face_visible(size_t index, size_t nb_index, const block_type types[]) {
     switch (types[index]) {
-        default: printf("Not grass\n"); return false;
+        default: return false;
         case grass_block: return types[nb_index] == air_block;
     }
 }
