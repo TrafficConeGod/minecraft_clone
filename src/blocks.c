@@ -19,7 +19,6 @@ static size_t get_neighbor_begin_index(size_t face) {
     return 0;
 }
 
-// TODO: Implement functions for seperate faces
 static bool is_face_visible(size_t index, size_t nb_index, const block_type types[]) {
     switch (types[index]) {
         default: return false;
@@ -35,6 +34,9 @@ void create_block_meshes_from_block_types(const block_type types[]) {
         face_visibility_arrays[face] = mem.data_stack + get_face_visibility_offset(face);
     }
 
+    // TODO: Specialize this for loop into seperate cases for each face since certain faces may run faster with certain code
+    // Order it such that face neighbors that are negative in the array are accessed first so that the positive values (may) be more likely to be in cache
+    // Also the end_index fix is not useful for faces where index = 0
     for (size_t face = 0; face < NUM_FACES; face++) {
         bool* face_visibilities = face_visibility_arrays[face];
         size_t index = 0;
