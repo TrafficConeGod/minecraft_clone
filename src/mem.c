@@ -3,7 +3,7 @@
 
 memory mem;
 
-u8 total_memory[MEM_SIZE];
+static u8 total_memory[MEM_SIZE];
 
 void init_memory() {
     mem.data_stack = total_memory + MEM_SIZE;
