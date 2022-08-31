@@ -218,7 +218,5 @@ int main() {
 
     error:
     end:
-        term_memory();
-
-    return 0;
+        return 0;
 }

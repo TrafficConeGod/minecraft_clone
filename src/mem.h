@@ -9,4 +9,3 @@ typedef struct {
 extern memory mem;
 
 void init_memory();
-void term_memory();
